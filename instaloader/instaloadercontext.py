@@ -28,7 +28,7 @@ def copy_session(session: requests.Session, request_timeout: Optional[float] = N
     new.headers = session.headers.copy()
     # Override default timeout behavior.
     # Need to silence mypy bug for this. See: https://github.com/python/mypy/issues/2427
-    new.request = partial(new.request, timeout=request_timeout) # type: ignore
+    new.request = partial(new.request, timeout=request_timeout)  # type: ignore
     return new
 
 
@@ -68,7 +68,7 @@ class InstaloaderContext:
         self.two_factor_auth_pending = None
 
         # error log, filled with error() and printed at the end of Instaloader.main()
-        self.error_log = []                      # type: List[str]
+        self.error_log = []  # type: List[str]
 
         self._rate_controller = rate_controller(self) if rate_controller is not None else RateController(self)
 
@@ -76,7 +76,7 @@ class InstaloaderContext:
         self.raise_all_errors = False
 
         # Cache profile from id (mapping from id to Profile)
-        self.profile_id_cache = dict()           # type: Dict[int, Any]
+        self.profile_id_cache = dict()  # type: Dict[int, Any]
 
     @contextmanager
     def anonymous_copy(self):
@@ -158,15 +158,18 @@ class InstaloaderContext:
         """Returns our default anonymous requests.Session object."""
         session = requests.Session()
         session.proxies = {
-            'http':PROXY
+            'http': PROXY,
+            'https': PROXY
         }
         session.cookies.update({'sessionid': '', 'mid': '', 'ig_pr': '1',
                                 'ig_vw': '1920', 'csrftoken': '',
                                 's_network': '', 'ds_user_id': ''})
+        r = session.get('http://2ip.ru')
+        print(r.text)
         session.headers.update(self._default_http_header(empty_session_only=True))
         # Override default timeout behavior.
         # Need to silence mypy bug for this. See: https://github.com/python/mypy/issues/2427
-        session.request = partial(session.request, timeout=self.request_timeout) # type: ignore
+        session.request = partial(session.request, timeout=self.request_timeout)  # type: ignore
         return session
 
     def save_session_to_file(self, sessionfile):
@@ -181,7 +184,7 @@ class InstaloaderContext:
         session.headers.update({'X-CSRFToken': session.cookies.get_dict()['csrftoken']})
         # Override default timeout behavior.
         # Need to silence mypy bug for this. See: https://github.com/python/mypy/issues/2427
-        session.request = partial(session.request, timeout=self.request_timeout) # type: ignore
+        session.request = partial(session.request, timeout=self.request_timeout)  # type: ignore
         self._session = session
         self.username = username
 
@@ -209,7 +212,7 @@ class InstaloaderContext:
         session.headers.update(self._default_http_header())
         # Override default timeout behavior.
         # Need to silence mypy bug for this. See: https://github.com/python/mypy/issues/2427
-        session.request = partial(session.request, timeout=self.request_timeout) # type: ignore
+        session.request = partial(session.request, timeout=self.request_timeout)  # type: ignore
         session.get('https://www.instagram.com/web/__mid/')
         csrf_token = session.cookies.get_dict()['csrftoken']
         session.headers.update({'X-CSRFToken': csrf_token})
@@ -412,7 +415,7 @@ class InstaloaderContext:
             variables_json = json.dumps(variables, separators=(',', ':'))
 
             if rhx_gis:
-                #self.log("rhx_gis {} query_hash {}".format(rhx_gis, query_hash))
+                # self.log("rhx_gis {} query_hash {}".format(rhx_gis, query_hash))
                 values = "{}:{}".format(rhx_gis, variables_json)
                 x_instagram_gis = hashlib.md5(values.encode()).hexdigest()
                 tmpsession.headers['x-instagram-gis'] = x_instagram_gis
