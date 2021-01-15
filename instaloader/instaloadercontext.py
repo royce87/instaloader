@@ -164,8 +164,6 @@ class InstaloaderContext:
         session.cookies.update({'sessionid': '', 'mid': '', 'ig_pr': '1',
                                 'ig_vw': '1920', 'csrftoken': '',
                                 's_network': '', 'ds_user_id': ''})
-        r = session.get('http://2ip.ru')
-        print(r.text)
         session.headers.update(self._default_http_header(empty_session_only=True))
         # Override default timeout behavior.
         # Need to silence mypy bug for this. See: https://github.com/python/mypy/issues/2427
