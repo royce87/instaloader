@@ -24,10 +24,10 @@ PostCommentAnswer.text.__doc__ = "Comment text."
 PostCommentAnswer.owner.__doc__ = "Owner :class:`Profile` of the comment."
 PostCommentAnswer.likes_count.__doc__ = "Number of likes on comment."
 
-PostComment = namedtuple('PostComment', (*PostCommentAnswer._fields, 'answers')) # type: ignore
+PostComment = namedtuple('PostComment', (*PostCommentAnswer._fields, 'answers'))  # type: ignore
 for field in PostCommentAnswer._fields:
     getattr(PostComment, field).__doc__ = getattr(PostCommentAnswer, field).__doc__  # pylint: disable=no-member
-PostComment.answers.__doc__ = r"Iterator which yields all :class:`PostCommentAnswer`\ s for the comment." # type: ignore
+PostComment.answers.__doc__ = r"Iterator which yields all :class:`PostCommentAnswer`\ s for the comment."  # type: ignore
 
 PostLocation = namedtuple('PostLocation', ['id', 'name', 'slug', 'has_public_page', 'lat', 'lng'])
 PostLocation.id.__doc__ = "ID number of location."
@@ -69,7 +69,7 @@ class Post:
         self._node = node
         self._owner_profile = owner_profile
         self._full_metadata_dict = None  # type: Optional[Dict[str, Any]]
-        self._location = None            # type: Optional[PostLocation]
+        self._location = None  # type: Optional[PostLocation]
         self._iphone_struct_ = None
         if 'iphone_struct' in node:
             # if loaded from JSON with load_structure_from_file()
@@ -277,9 +277,9 @@ class Post:
                 # video_url is only present in full metadata, issue #558.
                 edges = self._full_metadata['edge_sidecar_to_children']['edges']
             if end < 0:
-                end = len(edges)-1
+                end = len(edges) - 1
             if start < 0:
-                start = len(edges)-1
+                start = len(edges) - 1
             for idx, edge in enumerate(edges):
                 if start <= idx <= end:
                     node = edge['node']
@@ -330,9 +330,11 @@ class Post:
         """Printable caption, useful as a format specifier for --filename-pattern.
 
         .. versionadded:: 4.2.6"""
+
         def _elliptify(caption):
             pcaption = ' '.join([s.replace('/', '\u2215') for s in caption.splitlines() if s]).strip()
             return (pcaption[:30] + u"\u2026") if len(pcaption) > 31 else pcaption
+
         return _elliptify(self.caption) if self.caption else ''
 
     @property
@@ -414,6 +416,7 @@ class Post:
         id (int), owner (:class:`Profile`) and answers (:class:`~typing.Iterator`\ [:class:`PostCommentAnswer`])
         if available.
         """
+
         def _postcommentanswer(node):
             return PostCommentAnswer(id=int(node['id']),
                                      created_at_utc=datetime.utcfromtimestamp(node['created_at']),
@@ -445,6 +448,7 @@ class Post:
         def _postcomment(node):
             return PostComment(*_postcommentanswer(node),
                                answers=_postcommentanswers(node))
+
         if self.comments == 0:
             # Avoid doing additional requests if there are no comments
             return
@@ -564,6 +568,7 @@ class Profile:
 
     Also, this class implements == and is hashable.
     """
+
     def __init__(self, context: InstaloaderContext, node: Dict[str, Any]):
         assert 'username' in node
         self._context = context
@@ -1109,7 +1114,7 @@ class Story:
     def __init__(self, context: InstaloaderContext, node: Dict[str, Any]):
         self._context = context
         self._node = node
-        self._unique_id = None      # type: Optional[str]
+        self._unique_id = None  # type: Optional[str]
         self._owner_profile = None  # type: Optional[Profile]
 
     def __repr__(self):
@@ -1281,6 +1286,7 @@ class Hashtag:
 
     Also, this class implements == and is hashable.
     """
+
     def __init__(self, context: InstaloaderContext, node: Dict[str, Any]):
         assert "name" in node
         self._context = context
@@ -1453,6 +1459,7 @@ class TopSearchResults:
                                               'include_reel': False,
                                               '__a': 1})
 
+
     def get_profiles(self) -> Iterator[Profile]:
         """
         Provides the :class:`Profile` instances from the search result.
@@ -1487,7 +1494,7 @@ class TopSearchResults:
         Provides the hashtags from the search result as strings.
         """
         for hashtag in self._node.get('hashtags', []):
-            name = hashtag.get('hashtag', {}).get('name')
+            name = (hashtag.get('hashtag', {}).get('name'), hashtag.get('hashtag', {}).get('media_count'))
             if name:
                 yield name
 
