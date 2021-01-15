@@ -18,6 +18,7 @@ import requests
 import requests.utils
 
 from .exceptions import *
+from data.config import PROXY
 
 
 def copy_session(session: requests.Session, request_timeout: Optional[float] = None) -> requests.Session:
@@ -156,6 +157,9 @@ class InstaloaderContext:
     def get_anonymous_session(self) -> requests.Session:
         """Returns our default anonymous requests.Session object."""
         session = requests.Session()
+        session.proxies = {
+            'http':PROXY
+        }
         session.cookies.update({'sessionid': '', 'mid': '', 'ig_pr': '1',
                                 'ig_vw': '1920', 'csrftoken': '',
                                 's_network': '', 'ds_user_id': ''})
